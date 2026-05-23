@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Listar Autores - Agência de Notícias Web</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans min-h-screen flex flex-col">
+
+	<header th:replace="~{fragments/nav :: navbar}"></header>
+
+	<main class="max-w-6xl mx-auto px-6 py-10 w-full flex-1">
+		<div class="bg-white rounded-2xl shadow p-8">
+			<div class="flex justify-between items-center mb-6">
+				<h2 class="text-2xl font-bold text-gray-800">Autores Cadastrados</h2>
+				<a href="cadastrarAutor" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm">+ Novo Autor</a>
+			</div>
+
+			<div th:if="${#lists.isEmpty(autores)}" class="text-center text-gray-500 py-8">
+				Nenhum autor cadastrado.
+			</div>
+
+			<table th:unless="${#lists.isEmpty(autores)}" class="w-full text-left">
+				<thead>
+					<tr class="bg-blue-700 text-white">
+						<th class="p-3">Nome</th>
+						<th class="p-3">E-mail</th>
+						<th class="p-3">Data de Nascimento</th>
+						<th class="p-3 text-center">Ações</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="autor : ${autores}" class="border-b hover:bg-gray-50">
+						<td class="p-3" th:text="${autor.nome}"></td>
+						<td class="p-3" th:text="${autor.email}"></td>
+						<td class="p-3" th:text="${autor.dataNascimento}"></td>
+						<td class="p-3 text-center">
+							<a th:href="@{/editarAutor(id=${autor.id})}" class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">Editar</a>
+							<a th:href="@{/removerAutor(id=${autor.id})}" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700" onclick="return confirm('Remover este autor?')">Remover</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</main>
+
+	<footer th:replace="~{fragments/nav :: footer}"></footer>
+
+</body>
+</html>

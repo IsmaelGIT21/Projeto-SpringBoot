@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Editar Notícia - Agência de Notícias Web</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans min-h-screen flex flex-col">
+
+	<header th:replace="~{fragments/nav :: navbar}"></header>
+
+	<main class="max-w-3xl mx-auto px-6 py-10 w-full flex-1">
+		<div class="bg-white rounded-2xl shadow p-8">
+			<h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Editar Notícia</h2>
+
+			<form method="POST" action="editarNoticia" class="space-y-5">
+				<input type="hidden" name="id" th:value="${noticia.id}"/>
+
+				<div>
+					<label class="block text-sm font-medium text-gray-700 mb-1">Autor da Notícia</label>
+					<select name="autorId" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+						<option th:each="a : ${autores}" th:value="${a.id}" th:text="${a.nome}" th:selected="${a.id == noticia.autorId}"></option>
+					</select>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-700 mb-1">Assunto</label>
+					<select name="assuntoId" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+						<option th:each="a : ${assuntos}" th:value="${a.id}" th:text="${a.nome}" th:selected="${a.id == noticia.assuntoId}"></option>
+					</select>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-700 mb-1">Situação</label>
+					<select name="situacao" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+						<option th:each="s : ${situacoes}" th:value="${s.name()}" th:text="${s.descricao}" th:selected="${noticia.situacao != null and noticia.situacao.name() == s.name()}"></option>
+					</select>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-700 mb-1">Título</label>
+					<input type="text" name="titulo" th:value="${noticia.titulo}" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"/>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-700 mb-1">Conteúdo da Notícia</label>
+					<textarea name="conteudo" rows="8" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" th:text="${noticia.conteudo}"></textarea>
+				</div>
+				<div class="flex justify-between items-center pt-3">
+					<a href="listarNoticias" class="text-blue-600 hover:underline">← Voltar</a>
+					<button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Salvar Alterações</button>
+				</div>
+			</form>
+		</div>
+	</main>
+
+	<footer th:replace="~{fragments/nav :: footer}"></footer>
+
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+	<nav th:fragment="navbar" class="bg-white border-b border-gray-200 shadow-sm">
+		<div class="max-w-6xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-3">
+			<a href="/agencia.noticias/" class="text-xl font-bold text-blue-700 flex items-center gap-2">
+				<span class="inline-block w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center text-sm">AN</span>
+				Agência de Notícias Web
+			</a>
+			<div class="flex flex-wrap gap-4 text-sm text-gray-700 font-medium">
+				<a href="/agencia.noticias/cadastrarAutor" class="hover:text-blue-700">Cadastrar Autor</a>
+				<a href="/agencia.noticias/listarAutores" class="hover:text-blue-700">Listar Autores</a>
+				<a href="/agencia.noticias/cadastrarAssunto" class="hover:text-blue-700">Cadastrar Assunto</a>
+				<a href="/agencia.noticias/listarAssuntos" class="hover:text-blue-700">Listar Assuntos</a>
+				<a href="/agencia.noticias/cadastrarNoticia" class="hover:text-blue-700">Cadastrar Notícia</a>
+				<a href="/agencia.noticias/listarNoticias" class="hover:text-blue-700">Listar Notícias</a>
+			</div>
+		</div>
+	</nav>
+
+	<footer th:fragment="footer" class="bg-white border-t border-gray-200 mt-10 py-4">
+		<p class="text-center text-gray-500 text-sm">&copy; 2026 Agência de Notícias Web. Todos os direitos reservados.</p>
+	</footer>
+
+</body>
+</html>

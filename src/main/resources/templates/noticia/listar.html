@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Listar Notícias - Agência de Notícias Web</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans min-h-screen flex flex-col">
+
+	<header th:replace="~{fragments/nav :: navbar}"></header>
+
+	<main class="max-w-6xl mx-auto px-6 py-10 w-full flex-1">
+		<div class="bg-white rounded-2xl shadow p-8">
+			<div class="flex justify-between items-center mb-6 flex-wrap gap-3">
+				<h2 class="text-2xl font-bold text-gray-800">Notícias Cadastradas</h2>
+				<a href="cadastrarNoticia" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm">+ Nova Notícia</a>
+			</div>
+
+			<form method="GET" action="listarNoticias" class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6 bg-gray-50 p-4 rounded-lg">
+				<div>
+					<label class="block text-xs font-medium text-gray-600 mb-1">Filtrar por autor</label>
+					<select name="autorId" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+						<option value="">Todos</option>
+						<option th:each="a : ${autores}" th:value="${a.id}" th:text="${a.nome}" th:selected="${filtroAutorId == a.id}"></option>
+					</select>
+				</div>
+				<div>
+					<label class="block text-xs font-medium text-gray-600 mb-1">Filtrar por assunto</label>
+					<select name="assuntoId" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+						<option value="">Todos</option>
+						<option th:each="a : ${assuntos}" th:value="${a.id}" th:text="${a.nome}" th:selected="${filtroAssuntoId == a.id}"></option>
+					</select>
+				</div>
+				<div>
+					<label class="block text-xs font-medium text-gray-600 mb-1">Filtrar por situação</label>
+					<select name="situacao" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+						<option value="">Todas</option>
+						<option th:each="s : ${situacoes}" th:value="${s.name()}" th:text="${s.descricao}" th:selected="${filtroSituacao != null and filtroSituacao.name() == s.name()}"></option>
+					</select>
+				</div>
+				<div class="flex items-end gap-2">
+					<button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm">Filtrar</button>
+					<a href="listarNoticias" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition text-sm">Limpar</a>
+				</div>
+			</form>
+
+			<div th:if="${#lists.isEmpty(noticias)}" class="text-center text-gray-500 py-8">
+				Nenhuma notícia encontrada.
+			</div>
+
+			<table th:unless="${#lists.isEmpty(noticias)}" class="w-full text-left">
+				<thead>
+					<tr class="bg-blue-700 text-white">
+						<th class="p-3">Autor</th>
+						<th class="p-3">Assunto</th>
+						<th class="p-3">Título</th>
+						<th class="p-3">Situação</th>
+						<th class="p-3">Data</th>
+						<th class="p-3 text-center">Ações</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="n : ${noticias}" class="border-b hover:bg-gray-50">
+						<td class="p-3" th:text="${autoresMap[n.autorId] != null} ? ${autoresMap[n.autorId].nome} : '—'"></td>
+						<td class="p-3" th:text="${assuntosMap[n.assuntoId] != null} ? ${assuntosMap[n.assuntoId].nome} : '—'"></td>
+						<td class="p-3" th:text="${n.titulo}"></td>
+						<td class="p-3" th:text="${n.situacao != null} ? ${n.situacao.descricao} : '—'"></td>
+						<td class="p-3" th:text="${n.data}"></td>
+						<td class="p-3 text-center whitespace-nowrap">
+							<a th:href="@{/editarNoticia(id=${n.id})}" class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">Editar</a>
+							<a th:href="@{/removerNoticia(id=${n.id})}" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700" onclick="return confirm('Remover esta notícia?')">Remover</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</main>
+
+	<footer th:replace="~{fragments/nav :: footer}"></footer>
+
+</body>
+</html>

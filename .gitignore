@@ -1,0 +1,22 @@
+# Maven
+target/
+
+# Eclipse
+.project
+.classpath
+.settings/
+bin/
+
+# IntelliJ
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# Claude Code local config
+.claude/
+
+# OS
+Thumbs.db
+.DS_Store
