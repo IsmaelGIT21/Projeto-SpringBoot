@@ -6,17 +6,43 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
+/**
+ * Entidade Noticia — reportagem produzida por um autor sobre um assunto.
+ *
+ * Persistida na coleção "Noticia" do MongoDB.
+ *
+ * Modelagem por REFERÊNCIA, não por embarcamento:
+ *   - Guardamos apenas autorId e assuntoId (strings), não os objetos.
+ *   - Vantagem: se o nome do autor mudar, a alteração reflete em todas
+ *     as notícias automaticamente (sem precisar atualizar cópias).
+ *   - O lookup do nome do autor/assunto é feito no controller quando
+ *     a listagem é montada.
+ */
 @Document(collection = "Noticia")
 public class Noticia {
 
 	@Id
 	private String id;
+
 	private String titulo;
 	private String conteudo;
+
+	/** Referência ao Autor (apenas o _id, não o documento inteiro). */
 	private String autorId;
+
+	/** Referência ao Assunto (apenas o _id). */
 	private String assuntoId;
+
+	/**
+	 * Estado da notícia (EM_PRODUCAO, PUBLICADA, CANCELADA). O Mongo
+	 * armazena o nome do enum como string.
+	 */
 	private Situacao situacao;
 
+	/**
+	 * Data de criação da notícia, preenchida automaticamente pelo
+	 * controller no momento do cadastro (LocalDate.now()).
+	 */
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate data;
 

@@ -1,3 +1,9 @@
+<!--
+	assunto/editar.html
+	===================
+	Edição de Assunto, pré-preenchida pelo controller.
+	O ID é enviado num campo hidden para garantir UPDATE (não INSERT).
+-->
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -22,6 +28,7 @@
 				</div>
 				<div>
 					<label class="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
+					<!-- th:text dentro de textarea define o conteúdo inicial. -->
 					<textarea name="descricao" rows="4" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" th:text="${assunto.descricao}"></textarea>
 				</div>
 				<div class="flex justify-between items-center pt-3">

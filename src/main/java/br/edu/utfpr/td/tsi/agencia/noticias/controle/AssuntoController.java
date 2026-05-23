@@ -13,9 +13,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import br.edu.utfpr.td.tsi.agencia.noticias.modelo.Assunto;
 import br.edu.utfpr.td.tsi.agencia.noticias.persistencia.AssuntoRepository;
 
+/**
+ * Controller do CRUD de Assunto.
+ *
+ * Mesma estrutura do AutorController — cadastrar, listar, editar,
+ * remover. Os assuntos devem ser cadastrados previamente para que
+ * possam ser referenciados nas notícias (requisito do enunciado).
+ */
 @Controller
 public class AssuntoController {
 
+	// Injeção via IoC do Spring; ver detalhes em AutorController.
 	@Autowired
 	private AssuntoRepository assuntoRepository;
 
@@ -26,6 +34,7 @@ public class AssuntoController {
 
 	@PostMapping("/cadastrarAssunto")
 	public String cadastrarAssunto(Assunto assunto) {
+		// Gera ID único antes do INSERT (mesmo padrão usado em Autor).
 		assunto.setId(UUID.randomUUID().toString());
 		assuntoRepository.save(assunto);
 		return "redirect:/listarAssuntos";

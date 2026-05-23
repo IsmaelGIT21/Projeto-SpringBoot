@@ -1,3 +1,11 @@
+<!--
+	autor/editar.html
+	=================
+	Formulário de edição de Autor, pré-preenchido com os dados atuais
+	(injetados pelo AutorController.exibirPaginaEditarAutor).
+	O ID é enviado num <input hidden> para que o save no controller
+	identifique qual documento atualizar (UPSERT).
+-->
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -15,9 +23,11 @@
 			<h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Editar Autor</h2>
 
 			<form method="POST" action="editarAutor" class="space-y-5">
+				<!-- Campo hidden carrega o ID; sem ele o save criaria um NOVO documento. -->
 				<input type="hidden" name="id" th:value="${autor.id}"/>
 				<div>
 					<label class="block text-sm font-medium text-gray-700 mb-1">Nome do autor</label>
+					<!-- th:value pré-preenche o input com o valor atual. -->
 					<input type="text" name="nome" th:value="${autor.nome}" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"/>
 				</div>
 				<div>

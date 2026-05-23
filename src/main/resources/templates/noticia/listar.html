@@ -1,3 +1,14 @@
+<!--
+	noticia/listar.html
+	===================
+	Listagem de notícias com filtros opcionais (autor / assunto /
+	situação) — atende o requisito do enunciado de "permitir listagem
+	por: autor, assunto e situação da notícia".
+
+	Como Noticia guarda só autorId e assuntoId, a view recebe dois
+	mapas auxiliares (autoresMap, assuntosMap) preparados pelo
+	controller para fazer o lookup id → objeto.
+-->
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -17,6 +28,13 @@
 				<a href="cadastrarNoticia" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm">+ Nova Notícia</a>
 			</div>
 
+			<!--
+				Formulário de filtros: envia GET pra /listarNoticias com
+				query params. Cada select preserva o valor selecionado
+				usando th:selected, comparando com os atributos
+				filtroAutorId/filtroAssuntoId/filtroSituacao injetados
+				pelo controller.
+			-->
 			<form method="GET" action="listarNoticias" class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6 bg-gray-50 p-4 rounded-lg">
 				<div>
 					<label class="block text-xs font-medium text-gray-600 mb-1">Filtrar por autor</label>
@@ -41,6 +59,7 @@
 				</div>
 				<div class="flex items-end gap-2">
 					<button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm">Filtrar</button>
+					<!-- Link sem query params reseta os filtros. -->
 					<a href="listarNoticias" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition text-sm">Limpar</a>
 				</div>
 			</form>
@@ -62,9 +81,16 @@
 				</thead>
 				<tbody>
 					<tr th:each="n : ${noticias}" class="border-b hover:bg-gray-50">
+						<!--
+							Lookup: usa o autorId da notícia para buscar o
+							objeto Autor no mapa, e então exibe o nome. O
+							operador ternário trata o caso de autor removido
+							(autorId aponta pra um id que não existe mais).
+						-->
 						<td class="p-3" th:text="${autoresMap[n.autorId] != null} ? ${autoresMap[n.autorId].nome} : '—'"></td>
 						<td class="p-3" th:text="${assuntosMap[n.assuntoId] != null} ? ${assuntosMap[n.assuntoId].nome} : '—'"></td>
 						<td class="p-3" th:text="${n.titulo}"></td>
+						<!-- Exibe a 'descricao' do enum em vez do nome técnico (PUBLICADA → Publicada). -->
 						<td class="p-3" th:text="${n.situacao != null} ? ${n.situacao.descricao} : '—'"></td>
 						<td class="p-3" th:text="${n.data}"></td>
 						<td class="p-3 text-center whitespace-nowrap">

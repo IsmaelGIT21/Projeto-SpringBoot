@@ -2,10 +2,16 @@
 	xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
+	<!-- Identificação do projeto Maven (grupo + artefato + versão).
+	     Esse triplet define a coordenada única do JAR no repositório. -->
 	<groupId>br.edu.utfpr.td.tsi</groupId>
 	<artifactId>agencia.noticias</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
+	<!-- Herda do POM pai do Spring Boot: traz versões pré-testadas de TODAS as
+	     dependências do ecossistema Spring (BOM), além do plugin de build.
+	     Evita conflito de versões e simplifica o pom filho. -->
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
@@ -15,24 +21,38 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<!-- Java 17 é o mínimo exigido pelo Spring Boot 3.x e é a versão
+		     que está instalada no ambiente local. -->
 		<java.version>17</java.version>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
 	</properties>
 
 	<dependencies>
+		<!-- Spring MVC + Tomcat embarcado. Habilita @Controller, @GetMapping,
+		     @PostMapping e o servidor web embutido (sobe na porta configurada). -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+
+		<!-- Thymeleaf: engine de templates HTML server-side. Permite usar
+		     th:each, th:text, th:if, etc. nos .html da pasta templates/. -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
+
+		<!-- DevTools: hot reload automático ao salvar arquivos durante o
+		     desenvolvimento. Não vai pro JAR de produção. -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 		</dependency>
+
+		<!-- Spring Data MongoDB: camada de persistência. Traz MongoRepository,
+		     anotações @Document e @Id, e gera as queries derivadas
+		     (findByAutorId, findBySituacao, etc.) em tempo de execução. -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
@@ -41,6 +61,8 @@
 
 	<build>
 		<plugins>
+			<!-- Plugin que empacota tudo num "fat JAR" executável com o Tomcat
+			     embutido. Permite rodar com 'java -jar agencia.noticias.jar'. -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

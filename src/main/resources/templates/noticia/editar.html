@@ -1,3 +1,10 @@
+<!--
+	noticia/editar.html
+	===================
+	Edição de Notícia, com os mesmos três selects do cadastro,
+	porém com th:selected para manter o valor atual da notícia
+	em cada dropdown.
+-->
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -15,8 +22,11 @@
 			<h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Editar Notícia</h2>
 
 			<form method="POST" action="editarNoticia" class="space-y-5">
+				<!-- ID hidden garante UPDATE em vez de INSERT. -->
 				<input type="hidden" name="id" th:value="${noticia.id}"/>
 
+				<!-- Select de autor: th:selected marca a opção cujo id
+				     bate com o autorId atualmente gravado na notícia. -->
 				<div>
 					<label class="block text-sm font-medium text-gray-700 mb-1">Autor da Notícia</label>
 					<select name="autorId" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
@@ -41,6 +51,7 @@
 				</div>
 				<div>
 					<label class="block text-sm font-medium text-gray-700 mb-1">Conteúdo da Notícia</label>
+					<!-- th:text dentro da textarea injeta o conteúdo atual. -->
 					<textarea name="conteudo" rows="8" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" th:text="${noticia.conteudo}"></textarea>
 				</div>
 				<div class="flex justify-between items-center pt-3">

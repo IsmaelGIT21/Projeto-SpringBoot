@@ -1,13 +1,30 @@
+<!--
+	fragments/nav.html
+	==================
+	Fragmento reutilizável de navegação + rodapé.
+
+	Thymeleaf permite definir "fragments" (blocos reaproveitáveis)
+	usando th:fragment="nome". As outras páginas incluem esse
+	conteúdo com th:replace="~{fragments/nav :: nomeDoFragment}".
+
+	Mantém DRY (Don't Repeat Yourself) — uma única fonte de verdade
+	para o cabeçalho e rodapé do site.
+-->
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <body>
 
+	<!-- ============================================================
+	     Fragment 'navbar': barra superior com logo e links
+	     ============================================================ -->
 	<nav th:fragment="navbar" class="bg-white border-b border-gray-200 shadow-sm">
 		<div class="max-w-6xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-3">
+			<!-- Logo + título (clicável, volta para a home) -->
 			<a href="/agencia.noticias/" class="text-xl font-bold text-blue-700 flex items-center gap-2">
 				<span class="inline-block w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center text-sm">AN</span>
 				Agência de Notícias Web
 			</a>
+			<!-- Menu com as 6 operações principais -->
 			<div class="flex flex-wrap gap-4 text-sm text-gray-700 font-medium">
 				<a href="/agencia.noticias/cadastrarAutor" class="hover:text-blue-700">Cadastrar Autor</a>
 				<a href="/agencia.noticias/listarAutores" class="hover:text-blue-700">Listar Autores</a>
@@ -19,6 +36,9 @@
 		</div>
 	</nav>
 
+	<!-- ============================================================
+	     Fragment 'footer': rodapé fixo no fim da página
+	     ============================================================ -->
 	<footer th:fragment="footer" class="bg-white border-t border-gray-200 mt-10 py-4">
 		<p class="text-center text-gray-500 text-sm">&copy; 2026 Agência de Notícias Web. Todos os direitos reservados.</p>
 	</footer>

@@ -1,3 +1,9 @@
+<!--
+	autor/listar.html
+	=================
+	Tabela com todos os autores cadastrados, com botões de editar/remover.
+	A lista 'autores' é injetada pelo AutorController.listarAutores().
+-->
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -17,10 +23,12 @@
 				<a href="cadastrarAutor" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm">+ Novo Autor</a>
 			</div>
 
+			<!-- Mensagem alternativa quando ainda não há autores. -->
 			<div th:if="${#lists.isEmpty(autores)}" class="text-center text-gray-500 py-8">
 				Nenhum autor cadastrado.
 			</div>
 
+			<!-- A tabela só é renderizada se a lista NÃO estiver vazia. -->
 			<table th:unless="${#lists.isEmpty(autores)}" class="w-full text-left">
 				<thead>
 					<tr class="bg-blue-700 text-white">
@@ -31,11 +39,14 @@
 					</tr>
 				</thead>
 				<tbody>
+					<!-- th:each itera sobre a coleção 'autores' criando uma <tr> por elemento. -->
 					<tr th:each="autor : ${autores}" class="border-b hover:bg-gray-50">
 						<td class="p-3" th:text="${autor.nome}"></td>
 						<td class="p-3" th:text="${autor.email}"></td>
 						<td class="p-3" th:text="${autor.dataNascimento}"></td>
 						<td class="p-3 text-center">
+							<!-- @{...} é a sintaxe do Thymeleaf para montar URL com query params,
+							     equivalente a /editarAutor?id=xxx. -->
 							<a th:href="@{/editarAutor(id=${autor.id})}" class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">Editar</a>
 							<a th:href="@{/removerAutor(id=${autor.id})}" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700" onclick="return confirm('Remover este autor?')">Remover</a>
 						</td>
