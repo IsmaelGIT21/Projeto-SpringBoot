@@ -51,12 +51,8 @@ public class NoticiaController {
 	}
 
 	@GetMapping("/listarNoticias")
-	public String listarNoticias(
-			@RequestParam(required = false) String autorId,
-			@RequestParam(required = false) String assuntoId,
-			@RequestParam(required = false) Situacao situacao,
-			Model model) {
-
+	public String listarNoticias(@RequestParam(required = false) String autorId, @RequestParam(required = false) String assuntoId, 
+			@RequestParam(required = false) Situacao situacao, Model model) {
 		List<Noticia> noticias;
 		if (autorId != null && !autorId.isBlank()) {
 			noticias = noticiaRepository.findByAutorId(autorId);
@@ -72,6 +68,7 @@ public class NoticiaController {
 		for (Autor a : autorRepository.findAll()) {
 			autoresMap.put(a.getId(), a);
 		}
+		
 		Map<String, Assunto> assuntosMap = new HashMap<>();
 		for (Assunto a : assuntoRepository.findAll()) {
 			assuntosMap.put(a.getId(), a);
@@ -86,28 +83,34 @@ public class NoticiaController {
 		model.addAttribute("filtroAutorId", autorId);
 		model.addAttribute("filtroAssuntoId", assuntoId);
 		model.addAttribute("filtroSituacao", situacao);
+		
 		return "noticia/listar";
 	}
 
 	@GetMapping("/editarNoticia")
 	public String exibirPaginaEditarNoticia(@RequestParam String id, Model model) {
 		Optional<Noticia> noticia = noticiaRepository.findById(id);
+		
 		if (noticia.isEmpty()) {
 			return "redirect:/listarNoticias";
 		}
+		
 		model.addAttribute("noticia", noticia.get());
 		model.addAttribute("autores", autorRepository.findAll());
 		model.addAttribute("assuntos", assuntoRepository.findAll());
 		model.addAttribute("situacoes", Situacao.values());
+		
 		return "noticia/editar";
 	}
 
 	@PostMapping("/editarNoticia")
 	public String editarNoticia(Noticia noticia) {
 		Optional<Noticia> existente = noticiaRepository.findById(noticia.getId());
+		
 		if (existente.isPresent()) {
 			noticia.setData(existente.get().getData());
 		}
+		
 		noticiaRepository.save(noticia);
 		return "redirect:/listarNoticias";
 	}
