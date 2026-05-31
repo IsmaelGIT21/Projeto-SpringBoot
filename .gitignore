@@ -1,5 +1,6 @@
 # Maven
 target/
+**/target/
 
 # Eclipse
 .project
@@ -13,6 +14,10 @@ bin/
 
 # VS Code
 .vscode/
+
+# Eclipse workspace metadata
+.metadata/
+RemoteSystemsTempFiles/
 
 # Claude Code local config
 .claude/
