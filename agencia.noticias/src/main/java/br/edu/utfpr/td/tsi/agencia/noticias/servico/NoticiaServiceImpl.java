@@ -95,16 +95,6 @@ public class NoticiaServiceImpl implements NoticiaService {
 		indiceNoticia.remover(id);
 	}
 
-	/**
-	 * Reindexa no Solr todas as noticias ja persistidas no MongoDB. Chamado na
-	 * inicializacao da aplicacao para que a busca por conteudo encontre tambem
-	 * as noticias antigas (ou apos o indice do Solr ser recriado).
-	 */
-	/**
-	 * Ao iniciar a aplicacao, reindexa no Solr todas as noticias ja existentes
-	 * no MongoDB (mesmo padrao @PostConstruct do projeto de referencia). O
-	 * try/catch evita que uma indisponibilidade do Solr impeca o boot da app.
-	 */
 	@PostConstruct
 	public void init() {
 		try {
