@@ -52,12 +52,15 @@ public class SolrIndiceNoticia implements IndiceNoticia {
 		try {
 			String[] termos = termo.trim().split("\\s+");
 			StringBuilder textoConsulta = new StringBuilder("conteudo:(");
+			
 			for (int i = 0; i < termos.length; i++) {
 				if (i > 0) {
 					textoConsulta.append(" OR ");
 				}
+				
 				textoConsulta.append(ClientUtils.escapeQueryChars(termos[i]));
 			}
+			
 			textoConsulta.append(")");
 
 			SolrQuery consulta = new SolrQuery();
@@ -71,7 +74,9 @@ public class SolrIndiceNoticia implements IndiceNoticia {
 			for (SolrDocument documento : resposta.getResults()) {
 				ids.add((String) documento.getFieldValue("id"));
 			}
+			
 			return ids;
+		
 		} catch (SolrServerException | IOException e) {
 			throw new RuntimeException("Erro ao consultar o indice Solr", e);
 		}

@@ -72,9 +72,11 @@ public class NoticiaServiceImpl implements NoticiaService {
 		LocalDate hoje = LocalDate.now();
 		int quantidade = noticiaRepository.countByAutorIdAndAssuntoIdAndData(
 				noticia.getAutorId(), noticia.getAssuntoId(), hoje);
+		
 		if (quantidade >= LIMITE_POR_ASSUNTO_DIA) {
 			throw new RegraNegocioException("Limite atingido: este autor ja cadastrou 2 noticias deste assunto hoje.");
 		}
+		
 		noticia.setId(UUID.randomUUID().toString());
 		noticia.setData(hoje);
 		noticiaRepository.save(noticia);
@@ -100,17 +102,18 @@ public class NoticiaServiceImpl implements NoticiaService {
 		try {
 			reindexarTudo();
 		} catch (Exception e) {
-			log.warn("Nao foi possivel reindexar no Solr na inicializacao: {} "
-					+ "(verifique se o container do Solr esta no ar)", e.getMessage());
+			log.warn("Nao foi possivel reindexar no Solr na inicializacao: {} (verifique se o container do Solr esta no ar)", e.getMessage());
 		}
 	}
 
 	@Override
 	public void reindexarTudo() {
 		List<Noticia> noticias = noticiaRepository.findAll();
+		
 		for (Noticia noticia : noticias) {
 			indiceNoticia.indexar(noticia);
 		}
+		
 		log.info("Reindexadas {} noticia(s) no Solr na inicializacao.", noticias.size());
 	}
 }
