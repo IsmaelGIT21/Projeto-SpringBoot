@@ -6,13 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * Configuracao de Inversao de Controle (IoC) do cliente Solr.
- *
- * Expoe um {@link SolrClient} como bean gerenciado pelo Spring, apontando para
- * o servico de indexacao externo (Solr 10). A URL e o core sao lidos do
- * application.properties.
- */
 @Configuration
 public class SolrConfig {
 

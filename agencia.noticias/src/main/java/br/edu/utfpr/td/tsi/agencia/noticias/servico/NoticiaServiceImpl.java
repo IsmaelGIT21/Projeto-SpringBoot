@@ -45,12 +45,7 @@ public class NoticiaServiceImpl implements NoticiaService {
 	public List<Noticia> listarPorSituacao(Situacao situacao) {
 		return noticiaRepository.findBySituacao(situacao);
 	}
-
-	/**
-	 * Busca exigida pelo enunciado: primeiro localiza o valor de referencia (id)
-	 * no indice Solr a partir dos termos do corpo do texto, e entao consulta o
-	 * MongoDB para obter os dados completos das reportagens.
-	 */
+	
 	@Override
 	public List<Noticia> buscarPorConteudo(String termo) {
 		List<String> ids = indiceNoticia.buscarIdsPorTermo(termo);
@@ -73,8 +68,7 @@ public class NoticiaServiceImpl implements NoticiaService {
 		int quantidade = noticiaRepository.countByAutorIdAndAssuntoIdAndData(
 				noticia.getAutorId(), noticia.getAssuntoId(), hoje);
 		if (quantidade >= LIMITE_POR_ASSUNTO_DIA) {
-			throw new RegraNegocioException(
-					"Limite atingido: este autor ja cadastrou 2 noticias deste assunto hoje.");
+			throw new RegraNegocioException("Limite atingido: este autor ja cadastrou 2 noticias deste assunto hoje.");
 		}
 		noticia.setId(UUID.randomUUID().toString());
 		noticia.setData(hoje);

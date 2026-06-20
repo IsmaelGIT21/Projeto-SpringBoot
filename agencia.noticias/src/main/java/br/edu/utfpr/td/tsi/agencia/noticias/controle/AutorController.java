@@ -40,9 +40,11 @@ public class AutorController {
 	@GetMapping("/editarAutor")
 	public String exibirPaginaEditarAutor(@RequestParam String id, Model model) {
 		Optional<Autor> autor = autorService.buscarPorId(id);
+		
 		if (autor.isEmpty()) {
 			return "redirect:/listarAutores";
 		}
+		
 		model.addAttribute("autor", autor.get());
 		return "autor/editar";
 	}

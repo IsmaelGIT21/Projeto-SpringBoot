@@ -40,9 +40,11 @@ public class AssuntoController {
 	@GetMapping("/editarAssunto")
 	public String exibirPaginaEditarAssunto(@RequestParam String id, Model model) {
 		Optional<Assunto> assunto = assuntoService.buscarPorId(id);
+		
 		if (assunto.isEmpty()) {
 			return "redirect:/listarAssuntos";
 		}
+		
 		model.addAttribute("assunto", assunto.get());
 		return "assunto/editar";
 	}

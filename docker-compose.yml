@@ -1,15 +1,3 @@
-# Servicos de apoio do Trabalho 2 (Agencia de Noticias)
-#   - MongoDB: banco de dados principal (dados completos das reportagens)
-#   - Solr 10: servico de indexacao externo (busca por termos no conteudo)
-#
-# Uso:
-#   docker compose up -d        # sobe Mongo + Solr
-#   docker compose down         # para os servicos (mantem os volumes)
-#   docker compose down -v      # para e apaga os dados
-#
-# Apos subir, o core "noticias" e criado automaticamente no Solr
-# (http://localhost:8983 -> Core Selector -> noticias).
-
 services:
   mongo:
     image: mongo:7

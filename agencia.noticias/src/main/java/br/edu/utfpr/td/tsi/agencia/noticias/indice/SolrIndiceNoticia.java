@@ -15,13 +15,6 @@ import org.springframework.stereotype.Repository;
 
 import br.edu.utfpr.td.tsi.agencia.noticias.modelo.Noticia;
 
-/**
- * Implementacao da {@link IndiceNoticia} usando o cliente SolrJ.
- *
- * Os campos do documento Solr usam os dynamic fields do configset _default
- * (sufixo _txt -> text_general, tokenizado), evitando a necessidade de definir
- * um schema customizado.
- */
 @Repository
 public class SolrIndiceNoticia implements IndiceNoticia {
 
