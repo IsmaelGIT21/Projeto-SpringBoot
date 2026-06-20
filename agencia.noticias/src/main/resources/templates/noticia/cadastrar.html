@@ -14,35 +14,37 @@
 		<div class="bg-white rounded-2xl shadow p-8">
 			<h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Cadastro de Notícia</h2>
 
+			<div th:if="${erro}" class="mb-5 rounded-lg bg-red-100 border border-red-300 text-red-700 px-4 py-3 text-sm" th:text="${erro}"></div>
+
 			<form method="POST" action="cadastrarNoticia" class="space-y-5">
 				<div>
 					<label class="block text-sm font-medium text-gray-700 mb-1">Autor da Notícia</label>
 					<select name="autorId" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
 						<option value="" disabled selected>Selecione o autor</option>
-						<option th:each="a : ${autores}" th:value="${a.id}" th:text="${a.nome}"></option>
+						<option th:each="a : ${autores}" th:value="${a.id}" th:text="${a.nome}" th:selected="${noticia != null and noticia.autorId == a.id}"></option>
 					</select>
 				</div>
 				<div>
 					<label class="block text-sm font-medium text-gray-700 mb-1">Assunto</label>
 					<select name="assuntoId" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
 						<option value="" disabled selected>Selecione o assunto</option>
-						<option th:each="a : ${assuntos}" th:value="${a.id}" th:text="${a.nome}"></option>
+						<option th:each="a : ${assuntos}" th:value="${a.id}" th:text="${a.nome}" th:selected="${noticia != null and noticia.assuntoId == a.id}"></option>
 					</select>
 				</div>
 				<div>
 					<label class="block text-sm font-medium text-gray-700 mb-1">Situação da Notícia</label>
 					<select name="situacao" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
 						<option value="" disabled selected>Selecione a situação</option>
-						<option th:each="s : ${situacoes}" th:value="${s.name()}" th:text="${s.descricao}"></option>
+						<option th:each="s : ${situacoes}" th:value="${s.name()}" th:text="${s.descricao}" th:selected="${noticia != null and noticia.situacao != null and noticia.situacao.name() == s.name()}"></option>
 					</select>
 				</div>
 				<div>
 					<label class="block text-sm font-medium text-gray-700 mb-1">Título</label>
-					<input type="text" name="titulo" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"/>
+					<input type="text" name="titulo" required th:value="${noticia != null ? noticia.titulo : ''}" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"/>
 				</div>
 				<div>
 					<label class="block text-sm font-medium text-gray-700 mb-1">Conteúdo da Notícia</label>
-					<textarea name="conteudo" rows="8" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+					<textarea name="conteudo" rows="8" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" th:text="${noticia != null ? noticia.conteudo : ''}"></textarea>
 				</div>
 				<div class="flex justify-between items-center pt-3">
 					<a href="/agencia.noticias/" class="text-blue-600 hover:underline">← Voltar</a>

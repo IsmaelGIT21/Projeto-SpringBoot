@@ -1,5 +1,6 @@
 package br.edu.utfpr.td.tsi.agencia.noticias.persistencia;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -14,4 +15,6 @@ public interface NoticiaRepository extends MongoRepository<Noticia, String> {
 	List<Noticia> findByAssuntoId(String assuntoId);
 
 	List<Noticia> findBySituacao(Situacao situacao);
+
+	int countByAutorIdAndAssuntoIdAndData(String autorId, String assuntoId, LocalDate data);
 }

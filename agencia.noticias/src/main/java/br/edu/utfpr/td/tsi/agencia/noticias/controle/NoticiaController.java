@@ -1,13 +1,10 @@
 package br.edu.utfpr.td.tsi.agencia.noticias.controle;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,59 +15,74 @@ import br.edu.utfpr.td.tsi.agencia.noticias.modelo.Assunto;
 import br.edu.utfpr.td.tsi.agencia.noticias.modelo.Autor;
 import br.edu.utfpr.td.tsi.agencia.noticias.modelo.Noticia;
 import br.edu.utfpr.td.tsi.agencia.noticias.modelo.Situacao;
-import br.edu.utfpr.td.tsi.agencia.noticias.persistencia.AssuntoRepository;
-import br.edu.utfpr.td.tsi.agencia.noticias.persistencia.AutorRepository;
-import br.edu.utfpr.td.tsi.agencia.noticias.persistencia.NoticiaRepository;
+import br.edu.utfpr.td.tsi.agencia.noticias.servico.AssuntoService;
+import br.edu.utfpr.td.tsi.agencia.noticias.servico.AutorService;
+import br.edu.utfpr.td.tsi.agencia.noticias.servico.NoticiaService;
+import br.edu.utfpr.td.tsi.agencia.noticias.servico.RegraNegocioException;
 
 @Controller
 public class NoticiaController {
 
-	@Autowired
-	private NoticiaRepository noticiaRepository;
+	private final NoticiaService noticiaService;
+	private final AutorService autorService;
+	private final AssuntoService assuntoService;
 
-	@Autowired
-	private AutorRepository autorRepository;
-
-	@Autowired
-	private AssuntoRepository assuntoRepository;
+	public NoticiaController(NoticiaService noticiaService, AutorService autorService,
+			AssuntoService assuntoService) {
+		this.noticiaService = noticiaService;
+		this.autorService = autorService;
+		this.assuntoService = assuntoService;
+	}
 
 	@GetMapping("/cadastrarNoticia")
 	public String exibirPaginaCadastrarNoticia(Model model) {
-		model.addAttribute("autores", autorRepository.findAll());
-		model.addAttribute("assuntos", assuntoRepository.findAll());
+		model.addAttribute("autores", autorService.listarTodos());
+		model.addAttribute("assuntos", assuntoService.listarTodos());
 		model.addAttribute("situacoes", Situacao.values());
 		return "noticia/cadastrar";
 	}
 
 	@PostMapping("/cadastrarNoticia")
-	public String cadastrarNoticia(Noticia noticia) {
-		noticia.setId(UUID.randomUUID().toString());
-		noticia.setData(LocalDate.now());
-		noticiaRepository.save(noticia);
-		return "redirect:/listarNoticias";
+	public String cadastrarNoticia(Noticia noticia, Model model) {
+		try {
+			noticiaService.cadastrar(noticia);
+			return "redirect:/listarNoticias";
+		} catch (RegraNegocioException e) {
+			model.addAttribute("erro", e.getMessage());
+			model.addAttribute("noticia", noticia);
+			model.addAttribute("autores", autorService.listarTodos());
+			model.addAttribute("assuntos", assuntoService.listarTodos());
+			model.addAttribute("situacoes", Situacao.values());
+			return "noticia/cadastrar";
+		}
 	}
 
 	@GetMapping("/listarNoticias")
-	public String listarNoticias(@RequestParam(required = false) String autorId, @RequestParam(required = false) String assuntoId, 
-			@RequestParam(required = false) Situacao situacao, Model model) {
+	public String listarNoticias(@RequestParam(required = false) String autorId,
+			@RequestParam(required = false) String assuntoId,
+			@RequestParam(required = false) Situacao situacao,
+			@RequestParam(required = false) String termo, Model model) {
+
 		List<Noticia> noticias;
-		if (autorId != null && !autorId.isBlank()) {
-			noticias = noticiaRepository.findByAutorId(autorId);
+		if (termo != null && !termo.isBlank()) {
+			noticias = noticiaService.buscarPorConteudo(termo);
+		} else if (autorId != null && !autorId.isBlank()) {
+			noticias = noticiaService.listarPorAutor(autorId);
 		} else if (assuntoId != null && !assuntoId.isBlank()) {
-			noticias = noticiaRepository.findByAssuntoId(assuntoId);
+			noticias = noticiaService.listarPorAssunto(assuntoId);
 		} else if (situacao != null) {
-			noticias = noticiaRepository.findBySituacao(situacao);
+			noticias = noticiaService.listarPorSituacao(situacao);
 		} else {
-			noticias = noticiaRepository.findAll();
+			noticias = noticiaService.listarTodas();
 		}
 
 		Map<String, Autor> autoresMap = new HashMap<>();
-		for (Autor a : autorRepository.findAll()) {
+		for (Autor a : autorService.listarTodos()) {
 			autoresMap.put(a.getId(), a);
 		}
-		
+
 		Map<String, Assunto> assuntosMap = new HashMap<>();
-		for (Assunto a : assuntoRepository.findAll()) {
+		for (Assunto a : assuntoService.listarTodos()) {
 			assuntosMap.put(a.getId(), a);
 		}
 
@@ -83,41 +95,33 @@ public class NoticiaController {
 		model.addAttribute("filtroAutorId", autorId);
 		model.addAttribute("filtroAssuntoId", assuntoId);
 		model.addAttribute("filtroSituacao", situacao);
-		
+		model.addAttribute("filtroTermo", termo);
+
 		return "noticia/listar";
 	}
 
 	@GetMapping("/editarNoticia")
 	public String exibirPaginaEditarNoticia(@RequestParam String id, Model model) {
-		Optional<Noticia> noticia = noticiaRepository.findById(id);
-		
+		Optional<Noticia> noticia = noticiaService.buscarPorId(id);
 		if (noticia.isEmpty()) {
 			return "redirect:/listarNoticias";
 		}
-		
 		model.addAttribute("noticia", noticia.get());
-		model.addAttribute("autores", autorRepository.findAll());
-		model.addAttribute("assuntos", assuntoRepository.findAll());
+		model.addAttribute("autores", autorService.listarTodos());
+		model.addAttribute("assuntos", assuntoService.listarTodos());
 		model.addAttribute("situacoes", Situacao.values());
-		
 		return "noticia/editar";
 	}
 
 	@PostMapping("/editarNoticia")
 	public String editarNoticia(Noticia noticia) {
-		Optional<Noticia> existente = noticiaRepository.findById(noticia.getId());
-		
-		if (existente.isPresent()) {
-			noticia.setData(existente.get().getData());
-		}
-		
-		noticiaRepository.save(noticia);
+		noticiaService.editar(noticia);
 		return "redirect:/listarNoticias";
 	}
 
 	@GetMapping("/removerNoticia")
 	public String removerNoticia(@RequestParam String id) {
-		noticiaRepository.deleteById(id);
+		noticiaService.remover(id);
 		return "redirect:/listarNoticias";
 	}
 }
