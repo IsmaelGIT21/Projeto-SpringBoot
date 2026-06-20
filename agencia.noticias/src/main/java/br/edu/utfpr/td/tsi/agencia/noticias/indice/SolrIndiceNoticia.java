@@ -29,8 +29,7 @@ public class SolrIndiceNoticia implements IndiceNoticia {
 		try {
 			SolrInputDocument documento = new SolrInputDocument();
 			documento.addField("id", noticia.getId());
-			documento.addField("titulo_txt", noticia.getTitulo());
-			documento.addField("conteudo_txt", noticia.getConteudo());
+			documento.addField("conteudo", noticia.getConteudo());
 			solrClient.add(documento);
 			solrClient.commit();
 		} catch (SolrServerException | IOException e) {
@@ -52,7 +51,7 @@ public class SolrIndiceNoticia implements IndiceNoticia {
 	public List<String> buscarIdsPorTermo(String termo) {
 		try {
 			String[] termos = termo.trim().split("\\s+");
-			StringBuilder textoConsulta = new StringBuilder("conteudo_txt:(");
+			StringBuilder textoConsulta = new StringBuilder("conteudo:(");
 			for (int i = 0; i < termos.length; i++) {
 				if (i > 0) {
 					textoConsulta.append(" OR ");

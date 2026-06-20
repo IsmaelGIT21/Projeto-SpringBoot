@@ -1,7 +1,7 @@
 package br.edu.utfpr.td.tsi.agencia.noticias.config;
 
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.impl.HttpJdkSolrClient;
+import org.apache.solr.client.solrj.jetty.HttpJettySolrClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +17,7 @@ public class SolrConfig {
 
 	@Bean
 	public SolrClient solrClient() {
-		return new HttpJdkSolrClient.Builder(solrUrl)
+		return new HttpJettySolrClient.Builder(solrUrl)
 				.withDefaultCollection(solrCore)
 				.build();
 	}

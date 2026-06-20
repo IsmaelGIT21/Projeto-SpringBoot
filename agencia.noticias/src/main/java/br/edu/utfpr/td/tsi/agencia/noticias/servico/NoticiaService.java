@@ -25,4 +25,6 @@ public interface NoticiaService {
 	void editar(Noticia noticia);
 
 	void remover(String id);
+
+	void reindexarTudo();
 }

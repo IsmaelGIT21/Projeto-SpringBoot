@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import br.edu.utfpr.td.tsi.agencia.noticias.indice.IndiceNoticia;
@@ -15,6 +18,8 @@ import br.edu.utfpr.td.tsi.agencia.noticias.persistencia.NoticiaRepository;
 
 @Service
 public class NoticiaServiceImpl implements NoticiaService {
+
+	private static final Logger log = LoggerFactory.getLogger(NoticiaServiceImpl.class);
 
 	private static final int LIMITE_POR_ASSUNTO_DIA = 2;
 
@@ -88,5 +93,34 @@ public class NoticiaServiceImpl implements NoticiaService {
 	public void remover(String id) {
 		noticiaRepository.deleteById(id);
 		indiceNoticia.remover(id);
+	}
+
+	/**
+	 * Reindexa no Solr todas as noticias ja persistidas no MongoDB. Chamado na
+	 * inicializacao da aplicacao para que a busca por conteudo encontre tambem
+	 * as noticias antigas (ou apos o indice do Solr ser recriado).
+	 */
+	/**
+	 * Ao iniciar a aplicacao, reindexa no Solr todas as noticias ja existentes
+	 * no MongoDB (mesmo padrao @PostConstruct do projeto de referencia). O
+	 * try/catch evita que uma indisponibilidade do Solr impeca o boot da app.
+	 */
+	@PostConstruct
+	public void init() {
+		try {
+			reindexarTudo();
+		} catch (Exception e) {
+			log.warn("Nao foi possivel reindexar no Solr na inicializacao: {} "
+					+ "(verifique se o container do Solr esta no ar)", e.getMessage());
+		}
+	}
+
+	@Override
+	public void reindexarTudo() {
+		List<Noticia> noticias = noticiaRepository.findAll();
+		for (Noticia noticia : noticias) {
+			indiceNoticia.indexar(noticia);
+		}
+		log.info("Reindexadas {} noticia(s) no Solr na inicializacao.", noticias.size());
 	}
 }
