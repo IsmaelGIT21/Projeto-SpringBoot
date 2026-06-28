@@ -1,0 +1,296 @@
+========================================================================
+ROTEIRO DE APRESENTACAO - Trabalho 2: Agencia de Noticias (UP com indice)
+========================================================================
+
+Disciplina: Banco de Dados NoSQL (TSIN34D) - UTFPR Campus Toledo
+Professor:  Ivan Luiz Salvadori
+Integrantes:
+  - Joao Pedro Berwanger Stroparo (RA 2707608) - stroparo@alunos.utfpr.edu.br
+  - Ismael Felipe Elger Correa  (RA 2728397) - ismaelelger@hotmail.com
+
+Duracao-alvo: ~7-8 minutos . Formato: video . Apresentadores: A e B
+
+
+------------------------------------------------------------------------
+O QUE ESTE VIDEO PRECISA MOSTRAR
+------------------------------------------------------------------------
+
+Este e o UP (evolucao) do Trabalho 1. O projeto base (CRUDs, camadas,
+MongoDB) JA FOI apresentado na primeira entrega - NAO vamos demonstrar o
+projeto inteiro de novo.
+
+O foco e EVIDENCIAR AS ALTERACOES desta entrega, em especial o INDICE:
+  1. As novidades do Trabalho 2 (visao geral, rapida)
+  2. A camada de servico (regras de negocio)
+  3. O INDICE com Apache Solr - bloco principal: o professor quer ver
+     que entendemos COMO o indice funciona
+  4. Demonstracao focada apenas na busca por conteudo (o indice em acao)
+
+Sem repetir o que ja foi mostrado. Sem teoria alem do necessario.
+
+
+------------------------------------------------------------------------
+ANTES DE GRAVAR (checklist)
+------------------------------------------------------------------------
+
+[ ] Containers no ar: MongoDB e Solr (docker compose up -d)
+[ ] Core "noticias" criado no Solr (a imagem ja sobe com solr-precreate)
+[ ] Aplicacao subindo limpa e SEM warning de Solr no log
+[ ] App acessivel em http://localhost:9091/agencia.noticias/
+[ ] Pelo menos 3 noticias cadastradas com CONTEUDOS DIFERENTES entre si
+    (a busca textual precisa ter o que diferenciar)
+[ ] Solr Admin aberto numa aba: http://localhost:8983/solr
+    -> selecionar o core "noticias" -> aba "Query"
+[ ] Eclipse com abas pinadas, na ordem da explicacao:
+    SolrConfig.java, IndiceNoticia.java, SolrIndiceNoticia.java,
+    NoticiaService.java, NoticiaServiceImpl.java
+[ ] Verificar no Compass que os dados estao no banco "agencia-noticias"
+    (e nao em "test")
+
+
+------------------------------------------------------------------------
+DISTRIBUICAO
+------------------------------------------------------------------------
+
+  Apresentador A | O que mudou + camada de servico + demo/infra
+  Apresentador B | O INDICE em detalhe (bloco principal) + demo da busca
+
+
+========================================================================
+BLOCO 1 - ABERTURA (A, 30s)
+========================================================================
+
+FALAR:
+  "Ola, somos [A] e [B]. Este video e a continuacao do nosso Trabalho 1
+   de Banco de Dados NoSQL - a agencia de noticias em Spring Boot e
+   MongoDB. Como o sistema base ja foi apresentado, hoje vamos focar
+   apenas nas ALTERACOES desta entrega, com destaque para a indexacao
+   de conteudo com o Apache Solr."
+
+
+========================================================================
+BLOCO 2 - O QUE MUDOU DO TRABALHO 1 PARA O 2 (A, ~1 min)
+========================================================================
+
+MOSTRAR: Project Explorer, destacando os pacotes NOVOS:
+         "servico" e "indice".
+
+FALAR:
+  "Em relacao a primeira entrega, tres coisas foram adicionadas:
+
+   1. Uma camada de SERVICO - tiramos as regras de negocio de dentro
+      dos controllers e centralizamos em classes de servico.
+
+   2. Uma camada de INDICE - integramos o Apache Solr para fazer busca
+      textual no conteudo das noticias, que e o foco deste video.
+
+   3. Containerizacao - hoje o MongoDB e o Solr rodam em containers
+      Docker, o que padroniza o ambiente de execucao.
+
+   O resto do sistema - os CRUDs, as entidades, os templates - continua
+   como na primeira entrega."
+
+
+========================================================================
+BLOCO 3 - CAMADA DE SERVICO (A, ~1 min 30s)
+========================================================================
+
+MOSTRAR: pacote "servico" - NoticiaService.java (a interface).
+
+FALAR:
+  "Antes, o controller falava direto com o repositorio. Agora existe uma
+   camada intermediaria: a camada de servico. O controller chama o
+   servico, e o servico e quem coordena o repositorio (MongoDB) E o
+   indice (Solr)."
+
+MOSTRAR: NoticiaServiceImpl.java - metodo cadastrar.
+
+FALAR:
+  "Aqui ficam as regras de negocio. Por exemplo, esta validacao: um
+   mesmo autor nao pode cadastrar mais de duas noticias do mesmo assunto
+   no mesmo dia - se passar disso, lancamos uma RegraNegocioException.
+
+   E repare no final do metodo: depois de salvar a noticia no Mongo, a
+   gente chama 'indiceNoticia.indexar'. Ou seja, todo cadastro grava nos
+   DOIS lugares - no banco e no indice. O mesmo vale para editar e
+   remover. E o servico que garante que os dois fiquem sincronizados."
+
+
+========================================================================
+BLOCO 4 - O INDICE COM SOLR (B, ~3 min)  *** BLOCO PRINCIPAL ***
+========================================================================
+
+--- 4a) Por que indexar? (B, ~40s) ---
+
+FALAR:
+  "Por que precisamos de um indice? O MongoDB guarda a noticia inteira,
+   mas nao e a melhor ferramenta para buscar PALAVRAS dentro do corpo do
+   texto. O Solr e um motor de busca: ele indexa o texto e responde
+   buscas textuais de forma rapida.
+
+   Entao a gente usa os dois com papeis diferentes:
+     - MongoDB = fonte da verdade, guarda o documento completo.
+     - Solr    = indice de busca, guarda so o necessario para procurar:
+                 o ID e o CONTEUDO da noticia."
+
+--- 4b) Conexao com o Solr (B, ~30s) ---
+
+MOSTRAR: SolrConfig.java.
+
+FALAR:
+  "Esta classe configura o cliente do Solr. Criamos um SolrClient
+   apontando para o servidor e para o 'core' chamado 'noticias' - um core
+   no Solr e o equivalente a uma colecao, e onde os documentos ficam
+   indexados."
+
+--- 4c) Como a noticia entra no indice (B, ~50s) ---
+
+MOSTRAR: IndiceNoticia.java (a interface) e depois SolrIndiceNoticia.java.
+
+FALAR:
+  "Criamos a interface IndiceNoticia para nao acoplar o sistema ao Solr -
+   se um dia trocar de motor de busca, so muda a implementacao.
+
+   Na implementacao, o metodo 'indexar' monta um SolrInputDocument com
+   dois campos - 'id' e 'conteudo' - manda para o Solr com 'add' e em
+   seguida 'commit', que e o que efetiva o documento no indice. O
+   'remover' apaga pelo id. Simples: indexa id e conteudo, e nada mais."
+
+--- 4d) Como a busca funciona (B, ~60s)  <- PONTO MAIS IMPORTANTE ---
+
+MOSTRAR: SolrIndiceNoticia.java - metodo buscarIdsPorTermo.
+         Depois NoticiaServiceImpl.java - metodo buscarPorConteudo.
+
+FALAR:
+  "Esta e a parte central. Quando o usuario busca um termo, montamos uma
+   consulta no campo conteudo - algo como 'conteudo:(palavra1 OR
+   palavra2)' - e escapamos os caracteres especiais para nao quebrar a
+   query. Pedimos ao Solr SO o campo 'id' dos documentos que casam.
+
+   Ou seja: o Solr NAO devolve a noticia inteira - ele devolve apenas os
+   IDs das noticias que contem o termo.
+
+   Ai entra a ponte: la no servico, o metodo buscarPorConteudo pega esses
+   IDs e busca os documentos COMPLETOS no MongoDB, com findAllById. O ID
+   e o elo que liga os dois mundos: o Solr diz QUAIS noticias casam, e o
+   Mongo entrega o conteudo completo delas."
+
+--- 4e) Consistencia no boot (B, ~20s) ---
+
+MOSTRAR: NoticiaServiceImpl.java - metodo init / reindexarTudo (@PostConstruct).
+
+FALAR:
+  "Por fim, quando a aplicacao sobe, este metodo anotado com
+   @PostConstruct reindexa no Solr tudo o que ja existe no Mongo. Assim,
+   mesmo que o indice seja recriado, ele volta a ficar consistente com o
+   banco automaticamente."
+
+
+========================================================================
+BLOCO 5 - DEMONSTRACAO DA BUSCA (B + A, ~2 min)
+========================================================================
+
+B:
+MOSTRAR: app em http://localhost:9091/agencia.noticias/ -> Listar Noticias.
+
+FALAR:
+  "Vamos ver o indice funcionando. Tenho algumas noticias cadastradas com
+   conteudos diferentes. Vou usar o campo 'Buscar no Conteudo' e procurar
+   por uma palavra que so existe no corpo de uma delas... e a busca
+   retorna exatamente a noticia certa."
+
+A:
+MOSTRAR: Solr Admin -> core "noticias" -> aba Query -> q: conteudo:<palavra>
+         -> Execute Query.
+
+FALAR:
+  "E aqui esta a prova do outro lado: no proprio Solr Admin, rodando a
+   mesma consulta no campo conteudo, vemos os documentos indexados - com
+   id e conteudo - retornados pelo motor de busca. E exatamente o que a
+   aplicacao consome por tras."
+
+B (fechando a demo, mostra sincronizacao):
+MOSTRAR: remover uma noticia -> buscar o termo dela de novo.
+
+FALAR:
+  "E quando removo uma noticia, ela sai do banco E do indice - se eu
+   buscar o termo dela agora, nao aparece mais. Os dois ficam sempre em
+   sincronia."
+
+
+========================================================================
+BLOCO 6 - INFRA: CONTAINERS (A, ~40s) [opcional, se sobrar tempo]
+========================================================================
+
+MOSTRAR: docker-compose.yml.
+
+FALAR:
+  "Sobre o ambiente: este docker-compose sobe dois servicos - o MongoDB e
+   o Solr, ja com o core 'noticias' criado. Isso deixa o ambiente igual
+   em qualquer maquina, sem instalacao manual.
+
+   (Se for mencionar o ajuste do banco:) Aproveitamos para garantir que a
+   aplicacao usa o banco 'agencia-noticias' - no Spring Boot 3+ o nome do
+   banco precisa estar no proprio URI de conexao, senao ele cai no banco
+   padrao 'test'. Deixamos isso explicito na configuracao."
+
+
+========================================================================
+BLOCO 7 - ENCERRAMENTO (A + B, 30s)
+========================================================================
+
+A:
+  "Resumindo as alteracoes: adicionamos uma camada de servico com as
+   regras de negocio, e a indexacao do conteudo com o Apache Solr -
+   onde o Solr indexa id e conteudo, devolve os ids na busca, e o Mongo
+   entrega os documentos completos."
+
+B:
+  "Obrigado!"
+
+
+========================================================================
+PERGUNTAS FREQUENTES (caso o professor questione)
+========================================================================
+
+P: Por que o Solr guarda so id e conteudo, e nao a noticia inteira?
+R: Porque o indice serve para BUSCAR, nao para armazenar. Guardamos o
+   minimo para a busca textual (o conteudo) e o id para localizar a
+   noticia completa no Mongo. Evita duplicar os dados.
+
+P: O Solr substitui o MongoDB?
+R: Nao. Sao papeis diferentes: o Mongo e a fonte da verdade (documento
+   completo) e o Solr e o indice de busca textual. Trabalham juntos.
+
+P: Como o resultado da busca do Solr vira a noticia na tela?
+R: O Solr retorna apenas os IDs que casam com o termo. O servico usa
+   esses IDs para buscar os documentos completos no Mongo (findAllById).
+   O id e a ponte entre os dois.
+
+P: O que e um "core" no Solr?
+R: E o repositorio de indexacao do Solr, equivalente a uma colecao -
+   onde os documentos indexados ficam. O nosso se chama "noticias".
+
+P: Por que criaram a interface IndiceNoticia em vez de usar o Solr direto?
+R: Para desacoplar. O sistema depende da interface, nao do Solr. Se um
+   dia trocar o motor de busca, so muda a implementacao, sem mexer no
+   resto.
+
+P: O que acontece se o indice ficar dessincronizado do banco?
+R: No boot, o @PostConstruct reindexa tudo do Mongo no Solr. Alem disso,
+   cadastrar/editar/remover sempre atualizam os dois ao mesmo tempo.
+
+
+========================================================================
+DICAS PARA A GRAVACAO
+========================================================================
+
+- Apontar o cursor sobre o trecho de codigo que esta sendo explicado.
+- O bloco 4 (o indice) e o coracao do video - falar com calma nele.
+- O ponto que NAO pode faltar: "o Solr devolve os IDS, o Mongo entrega
+   os documentos completos - o id e a ponte". E isso que mostra que a
+   gente entendeu o indice.
+- Falar pausado - da para cortar pausas longas na edicao, mas nao da
+   para desatropelar fala apressada.
+- Se errar no meio de um bloco, pausar e refazer o bloco inteiro.
+- Se passar do tempo, o bloco 6 (infra) e o primeiro a ser cortado.
