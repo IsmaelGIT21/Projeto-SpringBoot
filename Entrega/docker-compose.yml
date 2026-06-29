@@ -1,0 +1,23 @@
+services:
+  mongo:
+    image: mongo:4.4
+    container_name: agencia-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  solr:
+    image: solr:10
+    container_name: agencia-solr
+    ports:
+      - "8983:8983"
+    command:
+      - solr-precreate
+      - noticias
+    volumes:
+      - solr-data:/var/solr
+
+volumes:
+  mongo-data:
+  solr-data:

@@ -1,0 +1,26 @@
+Agência de Notícias - Banco de Dados NoSQL
+
+Pré-requisitos:
+- Docker + Docker Compose
+- Java 17 (JRE) para executar o .jar
+
+Conteúdo da entrega:
+- agencia.noticias-0.0.1-SNAPSHOT.jar -> aplicação Spring Boot
+- agencia.noticias.zip -> código-fonte (projeto Maven)
+- docker-compose.yml -> sobe MongoDB e Solr já configurados
+- integrantes.txt -> integrantes do grupo
+
+Passo a passo:
+
+1) Subir os bancos (MongoDB + Solr) nesta mesma pasta:
+   docker compose up -d
+
+   Isso sobe:
+   - MongoDB em localhost:27017 (banco "agencia-noticias")
+   - Solr em localhost:8983 com o core "noticias" já criado
+
+2) Executar a aplicação:
+   java -jar agencia.noticias-0.0.1-SNAPSHOT.jar
+
+3) Acessar no navegador:
+   http://localhost:9091/agencia.noticias
